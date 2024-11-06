@@ -17,7 +17,7 @@ ui <- fluidPage(
       tabsetPanel(
         tabPanel("Analyse globale", verbatimTextOutput("globalAnalysis")),
         tabPanel("Analyse locale", verbatimTextOutput("localAnalysis")),
-        tabPanel("Phylogenèse", plotOutput("phylogenyPlot")),
+        tabPanel("Phylogénétique", plotOutput("phylogenyPlot")),
         tabPanel("Visualisation", htmlOutput("genomeBrowser"))
       )
     )
