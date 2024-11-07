@@ -46,8 +46,6 @@ convert_folder_fasta_to_json <- function(folder_path, json_file) {
 #Exécution de la fonction pour le dossier data
 convert_folder_fasta_to_json("data", "data/h5n1_sequences.json")
 
-convert_folder_fasta_to_json("data", "data/h5n1_sequences.json")
-
 function(input, output, session) {
 
   observeEvent(input$fastaFile, {
