@@ -9,7 +9,7 @@ ui <- fluidPage(
     sidebarPanel(
       fileInput("fastaFile", "Charger une séquence FASTA", accept = ".fasta"),
       selectInput("savedSequence", "Sélectionner une séquence sauvegardée",
-                  choices = list.files("data", pattern = "\\.rds$")),
+                  choices = list.files("data", pattern = ".fasta")),
       actionButton("analyze", "Lancer l'analyse")
     ),
     
