@@ -24,7 +24,18 @@ ui <- dashboardPage(
       choices = c("Aucune sélection" = "", list.files("data", pattern = ".fasta")), 
       selected = ""
     ),
+    
+    h2(" Options d'analyse : "),
+    
+    checkboxGroupInput("analysisOptions", "Choisissez les analyses à effectuer :",
+                       choices = list(
+                         "Alignement local" = "local",
+                         "Alignement global" = "global",
+                         "Phylogénétique" = "phylogeny"
+                       )
+    ),
     actionButton("analyze", "Lancer l'analyse"),
+    
     textOutput("debugOutput")
   ),
   
