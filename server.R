@@ -4,7 +4,6 @@ library(reticulate)
 library(jsonlite)
 library(R6)
 
-# Charger le script Python
 source("utils.R")
 
 #Création BDD
@@ -73,12 +72,6 @@ server <- function(input, output, session) {
     # Créer un objet de la classe Sequence
     sequence_obj(Sequence$new(seq_id, seq))
     
-    # Mettre à jour l'affichage
-    output$globalAnalysis <- renderText({
-      paste("Objet Sequence créé à partir du fichier chargé :",
-            sprintf("ID: %s, Sequence: %s", seq_id, substr(seq, 1, 50)),
-            "...")
-    })
   })
   
   # Afficher l'information de la séquence (par exemple pour debug)
@@ -105,17 +98,29 @@ server <- function(input, output, session) {
     # Créer un objet de la classe Sequence
     sequence_obj(Sequence$new(seq_id, seq))
     
-    # Mettre à jour l'affichage
-    output$globalAnalysis <- renderText({
-      paste("Objet Sequence créé à partir de la séquence sauvegardée :",
-            sprintf("ID: %s, Sequence: %s", seq_id, substr(seq, 1, 50)),
-            "...")
-    })
   })
   
   # Gestion des séquences sauvegardées (optionnel)
   selectedSequence <- reactive({
     req(input$savedSequence)
     read_fasta(paste0("data/", input$savedSequence))
+  })
+  
+  output$globalAnalysis <- renderText({
+    if ("global" %in% input$analysisOptions) {
+      paste("Résultats de l'alignement global...")
+    }
+  })
+  
+  output$localAnalysis <- renderText({
+    if ("local" %in% input$analysisOptions) {
+      paste("Résultats de l'alignement local...")
+    }
+  })
+  
+  output$phylogenyPlot <- renderPlot({
+    if ("phylogeny" %in% input$analysisOptions) {
+      plot(1:10, 1:10, main = "Arbre phylogénétique")
+    }
   })
 }
