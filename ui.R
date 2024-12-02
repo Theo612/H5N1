@@ -47,7 +47,7 @@ ui <- dashboardPage(
       tabPanel("Phylogénétique", plotOutput("phylogenyPlot")),
       tabPanel("Visualisation", 
                tags$iframe(src = "genomeBrowser/index.html", 
-                           width = "100%", height = "100%"))
+                           width = "100%", height = "800px"))
     )
   )
 )
