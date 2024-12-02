@@ -5,7 +5,6 @@ library(jsonlite)
 library(R6)
 
 # Charger le script Python
-source_python("sequence.py")
 source("utils.R")
 
 #Création BDD
