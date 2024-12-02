@@ -32,11 +32,11 @@ server <- function(input, output, session) {
     req(input$fastaFile)
     
     # Lire le fichier FASTA avec la fonction read_fasta
-    fasta_sequences <- read_fasta(input$fastaFile$datapath)
+    fasta_sequence <- read_fasta(input$fastaFile$datapath)
     
-    # Utiliser uniquement la première séquence pour cet exemple
+    # Extraire l'identifiant et la séquence (un seul élément dans le fichier)
     seq_id <- names(fasta_sequences)[1]
-    seq <- fasta_sequences[[1]]
+    seq <- fasta_sequences[[seq_id]]
     
     # Créer un objet de la classe Sequence
     sequence_obj(Sequence$new(seq_id, seq))
@@ -59,9 +59,9 @@ server <- function(input, output, session) {
     # Charger la séquence depuis le fichier sauvegardé
     fasta_sequences <- read_fasta(paste0("data/", input$savedSequence))
     
-    # Utiliser uniquement la première séquence du fichier sélectionné
+    # Extraire l'identifiant et la séquence (un seul élément dans le fichier)
     seq_id <- names(fasta_sequences)[1]
-    seq <- fasta_sequences[[1]]
+    seq <- fasta_sequences[[seq_id]]
     
     # Créer un objet de la classe Sequence
     sequence_obj(Sequence$new(seq_id, seq))
