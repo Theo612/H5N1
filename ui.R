@@ -25,7 +25,8 @@ ui <- dashboardPage(
       selected = ""
     ),
     
-    h2(" Options d'analyse : "),
+    tags$div("Options d'analyse :", 
+         style = "text-align: center; font-size: 16px; font-weight: bold;"),
     
     checkboxGroupInput("analysisOptions", "Choisissez les analyses à effectuer :",
                        choices = list(
