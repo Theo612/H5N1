@@ -41,10 +41,4 @@ ui <- dashboardPage(
   )
 )
 
-server <- function(input, output) {
-  #Logique du serveur
-}
-
-shinyApp(ui = ui, server = server)
-
 
