@@ -18,7 +18,7 @@ Sequence <- R6::R6Class("Sequence",
                           
                           # Méthode pour afficher la description de la séquence
                           print_info = function() {
-                            return(sprintf("Sequence ID: %s, Length: %d", self$id, nchar(self$sequence)))
+                            return(sprintf("<b>Nom de la séquence chargée :</b> %s<br><b>Longueur :</b> %d", self$id, nchar(self$sequence)))
                           }
                         )
 )
@@ -43,12 +43,12 @@ server <- function(input, output, session) {
   })
   
   # Afficher l'information de la séquence (par exemple pour debug)
-  output$debugOutput <- renderText({
+  output$debugOutput <- renderUI({
     seq_obj <- sequence_obj()
     if (is.null(seq_obj)) {
-      return("Aucune séquence chargée.")
+      HTML("<div style='margin-left: 20px;'>Aucune séquence chargée.</div>")
     } else {
-      return(seq_obj$print_info())  # Appeler la méthode print_info
+      HTML(sprintf("<div style='margin-left: 20px;'>%s</div>", seq_obj$print_info()))
     }
   })
   
