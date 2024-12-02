@@ -7,7 +7,7 @@ html_file <- file.path(html_dir, "index.html")
 shiny::addResourcePath("genomeBrowser", html_dir)
 
 ui <- dashboardPage(
-  skin = "blue",
+  skin = "green",
   
   dashboardHeader(
     title = "Plateforme Génétique H5N1",
