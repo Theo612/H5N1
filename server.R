@@ -42,7 +42,16 @@ server <- function(input, output, session) {
     # Créer un objet de la classe Sequence
     sequence_obj(Sequence$new(seq_id, seq))
   })
-  
+
+    # Afficher l'information de la séquence (par exemple pour debug)
+  output$debugOutput <- renderUI({
+    seq_obj <- sequence_obj()
+    if (is.null(seq_obj)) {
+      HTML("<div style='margin-left: 20px;'>Aucune séquence chargée.</div>")
+    } else {
+      HTML(sprintf("<div style='margin-left: 20px;'>%s</div>", seq_obj$print_info()))
+    }
+  })
   
   # Gestion de l'événement lorsqu'une séquence sauvegardée est sélectionnée et analysée
   observeEvent(input$analyze, {
