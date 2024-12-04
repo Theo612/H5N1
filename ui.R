@@ -37,7 +37,7 @@ ui <- dashboardPage(
     ),
     actionButton("analyze", "Lancer l'analyse"),
     
-    textOutput("debugOutput")
+    uiOutput("debugOutput")
   ),
   
   #Contenu principal
