@@ -3,7 +3,8 @@ library(reticulate)
 library(R6)
 
 source("utils.R")
-source("databank.R")  #Importation des fonctions de gestion de la banque de données
+source("databank.R")  
+source("needleEmboss.R")
 
 Sequence <- R6::R6Class("Sequence",
                         public = list(
