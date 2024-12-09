@@ -69,9 +69,18 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$analyze, {
+    req(sequence_obj())  # S'assurer qu'une séquence est disponible
+    
+    reference_sequence <- "data/sequenceH5N1.fasta"
+    
+    # Appel à la fonction run_needle pour faire l'alignement
+    output_file <- tempfile(fileext = ".needle")  # Fichier de sortie temporaire
+    
+    result <- run_needle(sequence_obj()$sequence,sequence_obj()$id, reference_sequence, output_file)
+    
     output$globalAnalysis <- renderText({
       if ("global" %in% input$analysisOptions) {
-        paste("Résultats de l'alignement global...")
+        paste("Résultats de l'alignement global :\n", paste(result, collapse = "\n"))
       }
     })
     
