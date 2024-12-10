@@ -90,6 +90,7 @@ server <- function(input, output, session) {
       output$localAnalysis <- renderText(NULL)
     }
     
+    # Afficher le message pour l'analyse phylogénétique si sélectionnée
     if ("phylogeny" %in% input$analysisOptions) {
       output$phylogenyMessage <- renderText({
         paste("Calcul de l'arbre phylogénétique en cours...")
@@ -98,37 +99,41 @@ server <- function(input, output, session) {
       output$phylogenyMessage <- renderText(NULL)
     }
     
-    # Chemin du dossier contenant les fichiers FASTA
-    dossier <- "data"
-    
-    # Liste des fichiers FASTA dans le dossier
-    fichiers_fasta <- list.files(dossier, pattern = "\\.fna$|\\.fa$|\\.fasta$", full.names = TRUE)
-    if (length(fichiers_fasta) == 0) {
-      showNotification("Aucun fichier FASTA trouvé dans le dossier 'data'.", type = "error")
-      return(NULL)
-    }
-    
-    # Charger toutes les séquences FASTA
-    sequences <- lapply(fichiers_fasta, readDNAStringSet)
-    combined_sequences <- do.call(c, sequences)
-    
-    # Si une séquence est chargée depuis un fichier (ou base de données)
-    seq_obj <- sequence_obj()
-    if (!is.null(seq_obj)) {
-      # Convertir la séquence en format FASTA
-      seq_fasta <- DNAStringSet(seq_obj$sequence)
-      names(seq_fasta) <- seq_obj$id
-      # Ajouter la séquence au jeu de données
-      combined_sequences <- c(combined_sequences, seq_fasta)
-    }
-    showNotification("Séquence chargée ajoutée à la liste.", type = "message", duration = 3, id = "sequenceaj")
-    
-    # Effectuer l'analyse phylogénétique **uniquement si "phylogeny" est sélectionné
+    # Si l'option phylogénie est activée, procéder à la préparation des séquences
     if ("phylogeny" %in% input$analysisOptions) {
+      
+      # Chemin du dossier contenant les fichiers FASTA
+      dossier <- "data"
+      
+      # Liste des fichiers FASTA dans le dossier
+      fichiers_fasta <- list.files(dossier, pattern = "\\.fna$|\\.fa$|\\.fasta$", full.names = TRUE)
+      if (length(fichiers_fasta) == 0) {
+        showNotification("Aucun fichier FASTA trouvé dans le dossier 'data'.", type = "error")
+        return(NULL)
+      }
+      
+      # Charger toutes les séquences FASTA
+      sequences <- lapply(fichiers_fasta, readDNAStringSet)
+      combined_sequences <- do.call(c, sequences)
+      
+      # Si une séquence est chargée depuis un fichier (ou base de données)
+      seq_obj <- sequence_obj()
+      if (!is.null(seq_obj)) {
+        # Convertir la séquence en format FASTA
+        seq_fasta <- DNAStringSet(seq_obj$sequence)
+        names(seq_fasta) <- seq_obj$id
+        # Ajouter la séquence au jeu de données
+        combined_sequences <- c(combined_sequences, seq_fasta)
+      }
+      showNotification("Séquence chargée ajoutée à la liste.", type = "message", duration = 3, id = "sequenceaj")
+      
       # Démarrer l'analyse (en parallèle)
       showNotification("Création de l'arbre phylogénétique en cours, veuillez patienter...", type = "message", duration = NULL, id = "loading")
-    
+      
+      # Réalisation de l'alignement des séquences
       alignment_phyDat <- phyDat(as.matrix(msa(combined_sequences, method = "ClustalOmega")), type = "DNA")
+      
+      # Création de l'arbre phylogénétique
       tree_start <- NJ(dist.ml(alignment_phyDat))
       tree_ml <- pml(tree_start, data = alignment_phyDat)
       tree_optim <- optim.pml(tree_ml, model = "GTR", optGamma = TRUE)
@@ -136,7 +141,7 @@ server <- function(input, output, session) {
       # Enregistrer l'arbre optimisé dans le réactif
       phylo_tree(tree_optim)
       
-      # Afficher l'arbre
+      # Afficher l'arbre phylogénétique
       output$treePlot <- renderPlot({
         req(phylo_tree())  # Attendre que l'arbre soit disponible
         plot(phylo_tree()$tree, type = "phylogram", main = "Arbre phylogénétique par maximum de vraisemblance")
@@ -145,21 +150,11 @@ server <- function(input, output, session) {
       # Retirer la notification une fois l'analyse terminée
       removeNotification(id = "loading")
       
-      # Télécharger l'arbre au format Newick
+      # Permettre le téléchargement de l'arbre au format Newick
       output$downloadTree <- downloadHandler(
         filename = function() { paste("phylogenetic_tree_ml", Sys.Date(), ".nwk", sep = "") },
         content = function(file) {
           write.tree(phylo_tree()$tree, file = file)
-        }
-      )
-      
-      # Télécharger la séquence ajoutée (convertie en FASTA)
-      output$downloadSequence <- downloadHandler(
-        filename = function() {
-          paste(seq_obj$id, "_sequence.fasta", sep = "")
-        },
-        content = function(file) {
-          writeXStringSet(seq_fasta, file)
         }
       )
     }

@@ -40,7 +40,6 @@ ui <- dashboardPage(
       tabPanel("Analyse locale", verbatimTextOutput("localAnalysis")),
       tabPanel("Phylogénétique", 
                downloadButton("downloadTree", "Télécharger l'arbre"),
-               downloadButton("downloadSequence", "Télécharger la séquence ajoutée"), 
                plotOutput("treePlot")),
       tabPanel("Visualisation", 
                tags$iframe(src = "genomeBrowser/index.html", 
