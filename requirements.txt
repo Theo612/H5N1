@@ -1,0 +1,4 @@
+Installer BlastN : https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+Ajouter dans la variable PATH
+
+Installer Emboss
