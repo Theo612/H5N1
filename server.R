@@ -1,10 +1,13 @@
 library(shiny)
 library(reticulate)
 library(R6)
+library(rBLAST)
+library(Biostrings)
 
 source("utils.R")
 source("databank.R")  
 source("needleEmboss.R")
+source("rblast_local.R")
 
 Sequence <- R6::R6Class("Sequence",
                         public = list(
@@ -25,6 +28,7 @@ Sequence <- R6::R6Class("Sequence",
 )
 
 server <- function(input, output, session) {
+  
   # Réactif pour stocker l'objet Sequence
   sequence_obj <- reactiveVal(NULL)
   
@@ -69,6 +73,10 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$analyze, {
+
+    bdd_rblastlocal <- file.path(getwd(), "data/bdd_rblastl_local/database") # Le chemin de la base de données
+    res_rblast <- run_rblast(input$fastaFile$datapath, bdd_rblastlocal) # Appel de la fonction d'alignement local et stockage des résultats
+    
     req(sequence_obj())  # S'assurer qu'une séquence est disponible
     
     reference_sequence <- "data/sequenceH5N1.fasta"
@@ -86,7 +94,25 @@ server <- function(input, output, session) {
     
     output$localAnalysis <- renderText({
       if ("local" %in% input$analysisOptions) {
-        paste("Résultats de l'alignement local...")
+        if (is.null(res_rblast)) {
+          return("Aucun résultat trouvé.")
+        }
+        
+        # Transformer les résultats en table
+        results_df <- as.data.frame(res_rblast)
+        colnames(results_df) <- c("Query ID", "Subject ID", "% Identity", "Alignment Length", 
+                                  "Mismatches", "Gap Opens", "Query Start", "Query End", 
+                                  "Subject Start", "Subject End", "E-value", "Bit Score")
+        
+        # Convertir la table en texte
+        results_text <- apply(results_df, 1, function(row) {
+          paste(sprintf("Query: %s | Subject: %s | %% Identity: %.2f%% | Length: %d | E-value: %s",
+                        row["Query ID"], row["Subject ID"], as.numeric(row["% Identity"]), 
+                        as.integer(row["Alignment Length"]), row["E-value"]))
+        })
+        
+        # Afficher les résultats
+        paste("Résultats de l'alignement local :\n", paste(results_text, collapse = "\n"))
       }
     })
     
