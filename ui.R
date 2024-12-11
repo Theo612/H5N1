@@ -45,7 +45,9 @@ ui <- dashboardPage(
     tabsetPanel(
       tabPanel("Analyse globale", verbatimTextOutput("globalAnalysis")),
       tabPanel("Analyse locale", verbatimTextOutput("localAnalysis")),
-      tabPanel("Phylogénétique", plotOutput("phylogenyPlot")),
+      tabPanel("Phylogénétique", 
+               downloadButton("downloadTree", "Télécharger l'arbre"),
+               plotOutput("treePlot")),
       tabPanel("Visualisation", 
                tags$iframe(src = "genomeBrowser/index.html", 
                            width = "100%", height = "800px"))
